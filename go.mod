@@ -1,4 +1,4 @@
-module github.com/meshery/schemas
+module github.com/chethanac15/schemas
 
 go 1.23.4
 
