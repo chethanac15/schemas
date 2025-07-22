@@ -6,6 +6,7 @@ package model
 import (
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/gofrs/uuid"
 	"github.com/meshery/schemas/models/v1alpha1/capability"
@@ -251,6 +252,9 @@ type ModelDefinition_Metadata struct {
 	// Shape The shape of the node’s body. Note that each shape fits within the specified width and height, and so you may have to adjust width and height if you desire an equilateral shape (i.e. width !== height for several equilateral shapes)
 	Shape                *ModelDefinitionMetadataShape `json:"shape,omitempty" yaml:"shape,omitempty"`
 	AdditionalProperties map[string]interface{}        `json:"-" yaml:"-"`
+
+	// CreatedAt Timestamp for when the model metadata was created
+	CreatedAt *time.Time `json:"created_at,omitempty" yaml:"created_at,omitempty"`
 }
 
 // Getter for additional properties for ModelDefinition_Metadata. Returns the specified
@@ -342,6 +346,14 @@ func (a *ModelDefinition_Metadata) UnmarshalJSON(b []byte) error {
 		delete(object, "shape")
 	}
 
+	if raw, found := object["created_at"]; found {
+		err = json.Unmarshal(raw, &a.CreatedAt)
+		if err != nil {
+			return fmt.Errorf("error reading 'created_at': %w", err)
+		}
+		delete(object, "created_at")
+	}
+
 	if len(object) != 0 {
 		a.AdditionalProperties = make(map[string]interface{})
 		for fieldName, fieldBuf := range object {
@@ -410,6 +422,13 @@ func (a ModelDefinition_Metadata) MarshalJSON() ([]byte, error) {
 		object["shape"], err = json.Marshal(a.Shape)
 		if err != nil {
 			return nil, fmt.Errorf("error marshaling 'shape': %w", err)
+		}
+	}
+
+	if a.CreatedAt != nil {
+		object["created_at"], err = json.Marshal(a.CreatedAt)
+		if err != nil {
+			return nil, fmt.Errorf("error marshaling 'created_at': %w", err)
 		}
 	}
 
